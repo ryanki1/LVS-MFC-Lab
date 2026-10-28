@@ -6,6 +6,8 @@ import com.lvslab.lvs.domain.LoadCarrier
 import com.lvslab.lvs.domain.ResourceNotFound
 import com.lvslab.lvs.domain.SlottingStrategy
 import com.lvslab.lvs.domain.StorageOrder
+import com.lvslab.lvs.messaging.JmsSender
+import com.lvslab.lvs.messaging.TransportRequested
 import jakarta.ejb.Stateless
 import jakarta.inject.Inject
 import jakarta.persistence.EntityManager
@@ -28,6 +30,9 @@ class GoodsReceiptResource {
 
     @Inject
     private lateinit var slottingStrategy: SlottingStrategy
+
+    @Inject
+    private lateinit var jmsSender: JmsSender
 
     @POST
     fun receiveGoods(request: GoodsReceiptRequest): Response {
@@ -72,8 +77,19 @@ class GoodsReceiptResource {
         )
         em.persist(storageOrder)
 
+        // JMS-Nachricht in derselben JTA-Transaktion senden –
+        // bei DB-Fehler wird auch die JMS-Nachricht zurückgerollt.
+        jmsSender.sendTransportRequested(
+            TransportRequested(
+                storageOrderId   = storageOrder.id,
+                loadCarrierId    = loadCarrier.id,
+                sourceLocationId = null,
+                targetLocationId = targetLocation.id
+            )
+        )
+
         return Response.status(Response.Status.CREATED)
-            .entity(GoodsReceiptResponse(storageOrderId = storageOrder.id!!, targetLocationId = targetLocation.id!!))
+            .entity(GoodsReceiptResponse(storageOrderId = storageOrder.id, targetLocationId = targetLocation.id))
             .build()
     }
 }

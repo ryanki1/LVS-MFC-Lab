@@ -13,9 +13,6 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "asn_position")
 class AdvanceShippingNoticePosition(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "notice_id", nullable = false)
     var notice: AdvanceShippingNotice? = null,
@@ -26,4 +23,9 @@ class AdvanceShippingNoticePosition(
     var expectedQuantity: Int = 0,
     @Column(name = "received_quantity", nullable = false)
     var receivedQuantity: Int = 0
-)
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0L
+        protected set
+}

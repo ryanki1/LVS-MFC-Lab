@@ -10,13 +10,15 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "article")
 class Article(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
     @Column(name = "article_number", nullable = false, unique = true, length = 80)
     var articleNumber: String = "",
     @Column(nullable = false, length = 200)
     var description: String = "",
     @Column(name = "storage_type", nullable = false, length = 40)
     var storageType: String = "STANDARD"
-)
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0L
+        protected set
+}

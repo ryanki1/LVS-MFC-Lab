@@ -12,9 +12,6 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "storage_location")
 class StorageLocation(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
     @Column(nullable = false)
     var aisle: Int = 0,
     @Column(nullable = false)
@@ -26,4 +23,9 @@ class StorageLocation(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     var status: LocationStatus = LocationStatus.FREE
-)
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0L
+        protected set
+}

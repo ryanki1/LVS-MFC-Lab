@@ -15,9 +15,6 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "storage_order")
 class StorageOrder(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "asn_position_id", nullable = false)
     var noticePosition: AdvanceShippingNoticePosition? = null,
@@ -30,4 +27,9 @@ class StorageOrder(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     var status: StorageOrderStatus = StorageOrderStatus.CREATED
-)
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0L
+        protected set
+}

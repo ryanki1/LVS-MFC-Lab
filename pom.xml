@@ -25,6 +25,7 @@
         <testcontainers.version>1.20.6</testcontainers.version>
         <rest-assured.version>5.5.1</rest-assured.version>
         <flyway.version>10.20.1</flyway.version>
+        <jackson.version>2.18.2</jackson.version>
     </properties>
 
     <dependencyManagement>
@@ -73,6 +74,21 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-database-postgresql</artifactId>
                 <version>${flyway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.7.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-kotlin</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

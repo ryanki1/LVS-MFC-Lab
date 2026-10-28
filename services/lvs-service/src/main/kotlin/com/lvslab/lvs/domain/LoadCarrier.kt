@@ -13,9 +13,6 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "load_carrier")
 class LoadCarrier(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
     @Column(name = "carrier_code", nullable = false, unique = true, length = 80)
     var carrierCode: String = "",
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -26,4 +23,9 @@ class LoadCarrier(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")
     var location: StorageLocation? = null
-)
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0L
+        protected set
+}

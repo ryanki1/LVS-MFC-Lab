@@ -14,9 +14,6 @@ import java.time.Instant
 @Entity
 @Table(name = "stock_movement")
 class StockMovement(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "load_carrier_id", nullable = false)
     var loadCarrier: LoadCarrier? = null,
@@ -28,9 +25,14 @@ class StockMovement(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_location_id")
     var sourceLocation: StorageLocation? = null,
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_location_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "target_location_id", nullable = false)
     var targetLocation: StorageLocation? = null,
     @Column(name = "moved_at", nullable = false)
     var movedAt: Instant = Instant.now()
-)
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long = 0L
+        protected set
+}

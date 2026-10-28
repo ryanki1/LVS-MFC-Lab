@@ -42,7 +42,7 @@ class AsnResource {
 
         em.persist(asn)
         return Response.status(Response.Status.CREATED)
-            .entity(AsnResponse(id = asn.id!!, noticeNumber = asn.noticeNumber))
+            .entity(AsnResponse(id = asn.id, noticeNumber = asn.noticeNumber))
             .build()
     }
 }
