@@ -1,6 +1,6 @@
 embed-server --server-config=standalone-full.xml --std-out=echo
 /subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgresql,driver-class-name=org.postgresql.Driver)
-/subsystem=datasources/data-source=LvsDS:add(jndi-name=java:jboss/datasources/LvsDS,driver-name=postgresql,connection-url=jdbc:postgresql://postgres:5432/lvslab,user-name=${env.DB_USER},password=${env.DB_PASSWORD},enabled=true,jta=true)
+/subsystem=datasources/data-source=LvsDS:add(jndi-name=java:jboss/datasources/LvsDS,driver-name=postgresql,connection-url=jdbc:postgresql://${env.DB_HOST}:${env.DB_PORT,5432}/${env.DB_NAME},user-name=${env.DB_USER},password=${env.DB_PASSWORD},enabled=true,jta=true,min-pool-size=5,max-pool-size=50)
 /subsystem=messaging-activemq/server=default/jms-queue=TransportRequests:add(entries=["java:/jms/queue/TransportRequests"])
 /subsystem=messaging-activemq/server=default/jms-queue=TransportResults:add(entries=["java:/jms/queue/TransportResults"])
 stop-embedded-server

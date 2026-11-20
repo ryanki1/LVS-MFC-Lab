@@ -5,12 +5,8 @@ import jakarta.enterprise.context.ApplicationScoped
 @ApplicationScoped
 class SlottingStrategy {
     fun reserveLocation(locations: Collection<StorageLocation>, requiredType: String): StorageLocation {
-        val matchingFreeLocations = locations
-            .asSequence()
-            .filter { it.status == LocationStatus.FREE && it.type == requiredType }
-            .toList()
 
-        val selectedAisle = matchingFreeLocations
+        val selectedAisle = locations
             .groupingBy { it.aisle }
             .eachCount()
             .entries
@@ -19,7 +15,7 @@ class SlottingStrategy {
             ?.key
             ?: throw NoAvailableStorageLocation(requiredType)
 
-        return matchingFreeLocations
+        return locations
             .asSequence()
             .filter { it.aisle == selectedAisle }
             .sortedWith(compareBy<StorageLocation> { it.level }.thenBy { it.slot })

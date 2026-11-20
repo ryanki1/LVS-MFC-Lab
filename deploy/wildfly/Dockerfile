@@ -1,3 +1,15 @@
+# Stage 1 – Build
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
+WORKDIR /build
+COPY pom.xml .
+COPY services/lvs-service/pom.xml services/lvs-service/
+COPY services/mfr-service/pom.xml services/mfr-service/
+RUN mvn dependency:go-offline -pl services/lvs-service,services/mfr-service
+COPY services/lvs-service/src services/lvs-service/src
+COPY services/mfr-service/src services/mfr-service/src
+RUN mvn package -DskipTests -pl services/lvs-service,services/mfr-service
+
+# Stage 2 – Runtime
 FROM quay.io/wildfly/wildfly:35.0.1.Final-jdk21
 
 USER root
@@ -9,14 +21,16 @@ ADD https://repo1.maven.org/maven2/org/postgresql/postgresql/${POSTGRES_JDBC_VER
 
 COPY deploy/wildfly/postgresql-module.xml /opt/jboss/wildfly/modules/org/postgresql/main/module.xml
 COPY deploy/wildfly/configure.cli /opt/jboss/wildfly/configure.cli
-COPY services/lvs-service/target/lvs-service-1.0.0-SNAPSHOT.war /opt/jboss/wildfly/standalone/deployments/lvs-service.war
-COPY services/mfr-service/target/mfr-service-1.0.0-SNAPSHOT.war /opt/jboss/wildfly/standalone/deployments/mfr-service.war
+COPY --from=builder /build/services/lvs-service/target/lvs-service-1.0.0-SNAPSHOT.war /opt/jboss/wildfly/standalone/deployments/lvs-service.war
+COPY --from=builder /build/services/mfr-service/target/mfr-service-1.0.0-SNAPSHOT.war /opt/jboss/wildfly/standalone/deployments/mfr-service.war
 
 RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/jboss/wildfly/configure.cli
 
 RUN chown -R jboss:root /opt/jboss/wildfly/standalone /opt/jboss/wildfly/modules/org/postgresql
 
 USER jboss
+
+ENV JAVA_TOOL_OPTIONS="-Xms512m -Xmx4096m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/jboss/wildfly/standalone/log/heap.hprof"
 
 EXPOSE 8080 9990
 CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-c", "standalone-full.xml", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]

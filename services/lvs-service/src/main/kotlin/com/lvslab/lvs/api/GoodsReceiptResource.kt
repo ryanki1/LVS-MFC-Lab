@@ -63,8 +63,11 @@ class GoodsReceiptResource {
         em.persist(loadCarrier)
 
         val allLocations = em.createQuery(
-            "SELECT l FROM StorageLocation l", com.lvslab.lvs.domain.StorageLocation::class.java
-        ).resultList
+            "SELECT l FROM StorageLocation l WHERE l.type = :type AND l.status = 'FREE'",
+            com.lvslab.lvs.domain.StorageLocation::class.java
+        )
+            .setParameter("type", article.storageType)
+            .resultList
 
         val targetLocation = slottingStrategy.reserveLocation(allLocations, article.storageType)
 
