@@ -13,7 +13,7 @@ echo "Warte 30 Sekunden bis WildFly vollständig gestartet ist..."
 sleep 30
 
 echo "WildFly bereit – konfiguriere Datasource und JMS..."
-/opt/jboss/wildfly/bin/jboss-cli.sh --connect --file=/opt/jboss/wildfly/configure.cli
+/opt/jboss/wildfly/bin/jboss-cli.sh --connect=http-remoting://127.0.0.1:9990 --file=/opt/jboss/wildfly/configure.cli
 
 echo "Konfiguration abgeschlossen – deploye WARs..."
 mv /tmp/wars/*.war /opt/jboss/wildfly/standalone/deployments/
