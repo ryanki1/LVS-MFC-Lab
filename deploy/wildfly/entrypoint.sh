@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # WARs temporär aus deployments verschieben damit WildFly ohne sie startet
 mkdir -p /tmp/wars
@@ -8,17 +7,17 @@ mv /opt/jboss/wildfly/standalone/deployments/*.war /tmp/wars/ 2>/dev/null || tru
 /opt/jboss/wildfly/bin/standalone.sh -c standalone-full.xml -b 0.0.0.0 -bmanagement 0.0.0.0 &
 WILDFLY_PID=$!
 
-# Warten bis WildFly Management-Interface bereit ist
-echo "Warte bis WildFly vollständig gestartet ist..."
-until curl -s http://127.0.0.1:9990/management > /dev/null 2>&1; do
-  echo "Management noch nicht bereit, warte..."
+# Warten bis WildFly server-state=running meldet
+echo "Warte bis WildFly bereit ist..."
+until /opt/jboss/wildfly/bin/jboss-cli.sh --connect --controller=127.0.0.1:9990 \
+  --command=":read-attribute(name=server-state)" 2>/dev/null | grep -q '"result" => "running"'; do
+  echo "Noch nicht bereit, warte..."
   sleep 3
 done
-echo "Management Interface bereit – warte weitere 10 Sekunden..."
-sleep 10
 
 echo "WildFly bereit – konfiguriere Datasource und JMS..."
-/opt/jboss/wildfly/bin/jboss-cli.sh --connect --controller=127.0.0.1:9990 --file=/opt/jboss/wildfly/configure.cli
+/opt/jboss/wildfly/bin/jboss-cli.sh --connect --controller=127.0.0.1:9990 \
+  --file=/opt/jboss/wildfly/configure.cli
 
 echo "Konfiguration abgeschlossen – deploye WARs..."
 mv /tmp/wars/*.war /opt/jboss/wildfly/standalone/deployments/
