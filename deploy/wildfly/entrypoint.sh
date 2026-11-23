@@ -16,10 +16,16 @@ until /opt/jboss/wildfly/bin/jboss-cli.sh --connect --controller=127.0.0.1:9990 
 done
 
 echo "WildFly bereit – konfiguriere Datasource und JMS..."
-until /opt/jboss/wildfly/bin/jboss-cli.sh --connect --controller=127.0.0.1:9990 \
-  --file=/opt/jboss/wildfly/configure.cli 2>&1 | grep -v "The command is not available"; do
-  echo "CLI noch nicht verfügbar, warte..."
-  sleep 3
+while true; do
+  CLI_OUTPUT=$(/opt/jboss/wildfly/bin/jboss-cli.sh --connect --controller=127.0.0.1:9990 \
+    --file=/opt/jboss/wildfly/configure.cli 2>&1)
+  if echo "$CLI_OUTPUT" | grep -q "The command is not available"; then
+    echo "CLI noch nicht verfügbar, warte..."
+    sleep 3
+  else
+    echo "$CLI_OUTPUT"
+    break
+  fi
 done
 
 echo "Konfiguration abgeschlossen – deploye WARs..."
