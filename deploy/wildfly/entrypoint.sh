@@ -9,9 +9,10 @@ mv /opt/jboss/wildfly/standalone/deployments/*.war /tmp/wars/ 2>/dev/null || tru
 WILDFLY_PID=$!
 
 # Warten bis WildFly Management-Interface bereit ist
-until /opt/jboss/wildfly/bin/jboss-cli.sh --connect --command="version" > /dev/null 2>&1; do
+sleep 5
+until /opt/jboss/wildfly/bin/jboss-cli.sh --connect --timeout=5000 --command=":read-attribute(name=server-state)" 2>&1 | grep -q "running"; do
   echo "Warte auf WildFly Management-Interface..."
-  sleep 3
+  sleep 5
 done
 
 echo "WildFly bereit – konfiguriere Datasource und JMS..."
