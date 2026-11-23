@@ -21,16 +21,16 @@ ADD https://repo1.maven.org/maven2/org/postgresql/postgresql/${POSTGRES_JDBC_VER
 
 COPY deploy/wildfly/postgresql-module.xml /opt/jboss/wildfly/modules/org/postgresql/main/module.xml
 COPY deploy/wildfly/configure.cli /opt/jboss/wildfly/configure.cli
+COPY deploy/wildfly/entrypoint.sh /opt/jboss/wildfly/entrypoint.sh
 COPY --from=builder /build/services/lvs-service/target/lvs-service-1.0.0-SNAPSHOT.war /opt/jboss/wildfly/standalone/deployments/lvs-service.war
 COPY --from=builder /build/services/mfr-service/target/mfr-service-1.0.0-SNAPSHOT.war /opt/jboss/wildfly/standalone/deployments/mfr-service.war
 
-RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/jboss/wildfly/configure.cli
-
-RUN chown -R jboss:root /opt/jboss/wildfly/standalone /opt/jboss/wildfly/modules/org/postgresql
+RUN chown -R jboss:root /opt/jboss/wildfly/standalone /opt/jboss/wildfly/modules/org/postgresql \
+    && chmod +x /opt/jboss/wildfly/entrypoint.sh
 
 USER jboss
 
-ENV JAVA_TOOL_OPTIONS="-Xms512m -Xmx4096m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/jboss/wildfly/standalone/log/heap.hprof"
+ENV JAVA_TOOL_OPTIONS="-Xms64m -Xmx384m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/jboss/wildfly/standalone/log/heap.hprof"
 
 EXPOSE 8080 9990
-CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-c", "standalone-full.xml", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
+CMD ["/opt/jboss/wildfly/entrypoint.sh"]
