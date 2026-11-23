@@ -21,6 +21,7 @@ ADD https://repo1.maven.org/maven2/org/postgresql/postgresql/${POSTGRES_JDBC_VER
 
 COPY deploy/wildfly/postgresql-module.xml /opt/jboss/wildfly/modules/org/postgresql/main/module.xml
 COPY deploy/wildfly/configure.cli /opt/jboss/wildfly/configure.cli
+COPY deploy/wildfly/configure-runtime.cli /opt/jboss/wildfly/configure-runtime.cli
 COPY deploy/wildfly/entrypoint.sh /opt/jboss/wildfly/entrypoint.sh
 COPY --from=builder /build/services/lvs-service/target/lvs-service-1.0.0-SNAPSHOT.war /opt/jboss/wildfly/standalone/deployments/lvs-service.war
 COPY --from=builder /build/services/mfr-service/target/mfr-service-1.0.0-SNAPSHOT.war /opt/jboss/wildfly/standalone/deployments/mfr-service.war
